@@ -1,0 +1,1720 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Webora — Websites die wirken</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --ink: #07090E;
+      --ink2: #10131A;
+      --ink3: #171B24;
+      --paper: #F4F7FB;
+      --paper2: #E8EDF5;
+      --cream: #F9FAFC;
+      --gold: #8B9BFF;
+      --gold2: #C7D2FE;
+      --gold3: #E8ECFF;
+      --text: #F4F7FB;
+      --muted: #AAB3C5;
+      --dim: #667085;
+      --border: rgba(139, 155, 255, .12);
+      --border2: rgba(139, 155, 255, .28);
+      --r: 10px;
+      --rl: 24px;
+      font-size: 16px;
+    }
+
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--ink);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ─── CURSOR ─────────────────────────────────── */
+    #cursor {
+      width: 10px;
+      height: 10px;
+      background: var(--gold);
+      border-radius: 50%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform .1s, width .25s, height .25s, background .25s;
+      mix-blend-mode: difference;
+    }
+
+    #cursor-ring {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--gold);
+      border-radius: 50%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform .18s ease, width .3s, height .3s, opacity .3s;
+      opacity: .5;
+    }
+
+    body:hover #cursor {
+      opacity: 1;
+    }
+
+    /* ─── NOISE OVERLAY ──────────────────────────── */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1;
+      opacity: .4;
+    }
+
+    /* ─── AMBIENT LIGHT ──────────────────────────── */
+    .ambient {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 80% 10%, rgba(139, 155, 255, .09) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 50% at 10% 80%, rgba(139, 155, 255, .06) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 30% at 50% 50%, rgba(199, 210, 254, .02) 0%, transparent 70%);
+    }
+
+    /* ─── NAV ─────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 56px;
+      background: rgba(10, 11, 15, .6);
+      backdrop-filter: blur(28px) saturate(180%);
+      border-bottom: 1px solid var(--border);
+      transition: padding .4s;
+    }
+
+    nav.scrolled {
+      padding: 16px 56px;
+    }
+
+    .logo {
+      text-decoration: none;
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      letter-spacing: 5px;
+      color: var(--gold);
+      font-weight: 400;
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 40px;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 400;
+      transition: color .25s;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      right: 100%;
+      height: 1px;
+      background: var(--gold);
+      transition: right .3s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .nav-links a:hover::after {
+      right: 0;
+    }
+
+    .nav-cta {
+      text-decoration: none;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      padding: 12px 28px;
+      border-radius: 2px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 2.5px;
+      font-weight: 500;
+      transition: background .3s, color .3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav-cta::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--gold);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .3s ease;
+      z-index: -1;
+    }
+
+    .nav-cta:hover::before {
+      transform: scaleX(1);
+    }
+
+    .nav-cta:hover {
+      color: var(--ink);
+    }
+
+    /* ─── HERO ────────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 160px 40px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-line-top {
+      position: absolute;
+      top: 80px;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border2), transparent);
+    }
+
+    .hero-line-bottom {
+      position: absolute;
+      bottom: 80px;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+    }
+
+    .hero-line-left {
+      position: absolute;
+      left: 56px;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: linear-gradient(180deg, transparent, var(--border), transparent);
+    }
+
+    .hero-line-right {
+      position: absolute;
+      right: 56px;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: linear-gradient(180deg, transparent, var(--border), transparent);
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 48px;
+      opacity: 0;
+      animation: fadeUp .8s .2s forwards;
+    }
+
+    .eyebrow-line {
+      width: 40px;
+      height: 1px;
+      background: var(--gold);
+    }
+
+    .eyebrow-text {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: var(--gold);
+      font-weight: 400;
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(56px, 8.5vw, 116px);
+      line-height: .96;
+      font-weight: 400;
+      margin-bottom: 14px;
+      opacity: 0;
+      animation: fadeUp .9s .35s forwards;
+    }
+
+    .hero-title-italic {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(56px, 8.5vw, 116px);
+      font-style: italic;
+      font-weight: 400;
+      line-height: .96;
+      background: linear-gradient(135deg, var(--gold2), var(--gold3), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: block;
+      margin-bottom: 40px;
+      opacity: 0;
+      animation: fadeUp .9s .45s forwards;
+    }
+
+    .hero-sub {
+      max-width: 680px;
+      margin: 0 auto 56px;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.9;
+      font-weight: 300;
+      opacity: 0;
+      animation: fadeUp .9s .55s forwards;
+    }
+
+    .hero-btns {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp .9s .65s forwards;
+    }
+
+    .btn-gold {
+      text-decoration: none;
+      background: linear-gradient(135deg, var(--gold), var(--gold2));
+      color: var(--ink);
+      padding: 18px 46px;
+      border-radius: 2px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 2.5px;
+      font-weight: 600;
+      transition: transform .25s, box-shadow .25s;
+      box-shadow: 0 8px 40px rgba(139, 155, 255, .25);
+    }
+
+    .btn-gold:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 50px rgba(139, 155, 255, .35);
+    }
+
+    .btn-ghost {
+      text-decoration: none;
+      border: 1px solid rgba(242, 240, 235, .2);
+      color: var(--text);
+      padding: 18px 46px;
+      border-radius: 2px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 2.5px;
+      font-weight: 400;
+      transition: border-color .25s, color .25s;
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    /* TRUST STRIP */
+    .hero-strip {
+      margin-top: 90px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border: 1px solid var(--border);
+      border-radius: var(--rl);
+      overflow: hidden;
+      opacity: 0;
+      animation: fadeUp .9s .8s forwards;
+    }
+
+    .strip-item {
+      padding: 36px 28px;
+      border-right: 1px solid var(--border);
+      text-align: left;
+      transition: background .3s;
+    }
+
+    .strip-item:last-child {
+      border-right: none;
+    }
+
+    .strip-item:hover {
+      background: rgba(139, 155, 255, .04);
+    }
+
+    .strip-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 48px;
+      color: var(--gold2);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .strip-label {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 300;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    /* ─── MARQUEE ─────────────────────────────────── */
+    .marquee-section {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 22px 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .marquee-track {
+      display: flex;
+      gap: 80px;
+      animation: marquee 22s linear infinite;
+      width: max-content;
+    }
+
+    .marquee-track:hover {
+      animation-play-state: paused;
+    }
+
+    .marquee-item {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: var(--dim);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .marquee-item span {
+      color: var(--gold);
+      font-size: 14px;
+    }
+
+    @keyframes marquee {
+      0% {
+        transform: translateX(0)
+      }
+
+      100% {
+        transform: translateX(-50%)
+      }
+    }
+
+    /* ─── SECTION BASE ────────────────────────────── */
+    section {
+      padding: 120px 56px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .container {
+      max-width: 1240px;
+      margin: auto;
+    }
+
+    .section-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .section-eyebrow .line {
+      width: 32px;
+      height: 1px;
+      background: var(--gold);
+    }
+
+    .section-eyebrow .tag {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: var(--gold);
+      font-weight: 400;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(40px, 4.5vw, 68px);
+      line-height: 1.08;
+      font-weight: 400;
+      margin-bottom: 20px;
+    }
+
+    .section-title em {
+      font-style: italic;
+      background: linear-gradient(135deg, var(--gold2), var(--gold3));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .section-desc {
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.95;
+      max-width: 680px;
+      font-weight: 300;
+    }
+
+    /* ─── SERVICES ────────────────────────────────── */
+    .services-grid {
+      margin-top: 72px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      border: 1px solid var(--border);
+      border-radius: var(--rl);
+      overflow: hidden;
+    }
+
+    .svc {
+      background: var(--ink2);
+      padding: 44px 38px;
+      position: relative;
+      transition: background .3s;
+      overflow: hidden;
+    }
+
+    .svc::before {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      transform: scaleX(0);
+      transition: transform .4s ease;
+    }
+
+    .svc:hover {
+      background: var(--ink3);
+    }
+
+    .svc:hover::before {
+      transform: scaleX(1);
+    }
+
+    .svc-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 13px;
+      color: var(--gold);
+      opacity: .5;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+    }
+
+    .svc-icon {
+      font-size: 32px;
+      margin-bottom: 18px;
+      display: block;
+    }
+
+    .svc h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      font-weight: 400;
+      margin-bottom: 12px;
+    }
+
+    .svc p {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.85;
+      font-weight: 300;
+    }
+
+    /* ─── WHY / PILLARS ───────────────────────────── */
+    #why {
+      background: linear-gradient(180deg, var(--ink) 0%, var(--ink2) 100%);
+    }
+
+    .pillars {
+      margin-top: 72px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+
+    .pillar {
+      padding: 48px 36px;
+      border: 1px solid var(--border);
+      border-radius: var(--rl);
+      position: relative;
+      transition: border-color .3s, transform .3s;
+    }
+
+    .pillar:hover {
+      border-color: var(--border2);
+      transform: translateY(-6px);
+    }
+
+    .pillar-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--gold);
+      margin-bottom: 28px;
+      box-shadow: 0 0 20px rgba(139, 155, 255, .4);
+    }
+
+    .pillar h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 400;
+      margin-bottom: 14px;
+    }
+
+    .pillar p {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.9;
+    }
+
+    /* ─── PROCESS ─────────────────────────────────── */
+    .process-timeline {
+      margin-top: 80px;
+      position: relative;
+    }
+
+    .process-timeline::before {
+      content: "";
+      position: absolute;
+      left: 39px;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: linear-gradient(180deg, var(--border2), transparent);
+    }
+
+    .p-step {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 36px;
+      margin-bottom: 0;
+      padding: 48px 0;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+
+    .p-step:last-child {
+      border-bottom: none;
+    }
+
+    .p-num-wrap {
+      display: flex;
+      justify-content: center;
+      padding-top: 4px;
+    }
+
+    .p-num {
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--border2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 16px;
+      color: var(--gold);
+      background: var(--ink);
+      flex-shrink: 0;
+      transition: background .3s, border-color .3s;
+    }
+
+    .p-step:hover .p-num {
+      background: rgba(139, 155, 255, .1);
+      border-color: var(--gold);
+    }
+
+    .p-content h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 400;
+      margin-bottom: 12px;
+    }
+
+    .p-content p {
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.9;
+    }
+
+    /* ─── PRICING ─────────────────────────────────── */
+    #pricing {
+      background: var(--ink);
+    }
+
+    .pricing-grid {
+      margin-top: 72px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .price-card {
+      background: var(--ink2);
+      border: 1px solid var(--border);
+      border-radius: var(--rl);
+      padding: 48px 40px;
+      position: relative;
+      overflow: hidden;
+      transition: transform .3s, border-color .3s;
+    }
+
+    .price-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(145deg, rgba(139, 155, 255, .04), transparent 60%);
+      pointer-events: none;
+    }
+
+    .price-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--border2);
+    }
+
+    .price-card.featured {
+      border-color: var(--gold);
+      background: linear-gradient(145deg, rgba(139, 155, 255, .07), var(--ink2) 60%);
+    }
+
+    .feat-badge {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, var(--gold), var(--gold2));
+      color: var(--ink);
+      padding: 7px 16px;
+      border-radius: 100px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    .price-plan {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: var(--gold);
+      margin-bottom: 24px;
+    }
+
+    .price-amount {
+      font-family: 'Playfair Display', serif;
+      font-size: 64px;
+      font-weight: 400;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .price-currency {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      color: var(--gold2);
+      vertical-align: super;
+    }
+
+    .price-once {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 8px;
+      margin-bottom: 24px;
+    }
+
+    .price-monthly {
+      padding: 16px 20px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, .02);
+      margin-bottom: 32px;
+    }
+
+    .price-monthly .m-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    .price-monthly .m-price {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      color: var(--gold2);
+      margin-top: 4px;
+    }
+
+    .price-features {
+      list-style: none;
+      margin-bottom: 36px;
+    }
+
+    .price-features li {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 15px;
+      color: var(--muted);
+      font-weight: 300;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .price-features li:last-child {
+      border-bottom: none;
+    }
+
+    .price-features li::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+      flex-shrink: 0;
+      opacity: .7;
+    }
+
+    .btn-price {
+      display: block;
+      text-decoration: none;
+      text-align: center;
+      border: 1px solid var(--border2);
+      color: var(--text);
+      padding: 16px 30px;
+      border-radius: 6px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 500;
+      transition: background .3s, border-color .3s, color .3s;
+    }
+
+    .btn-price:hover {
+      background: rgba(139, 155, 255, .1);
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    .price-card.featured .btn-price {
+      background: linear-gradient(135deg, var(--gold), var(--gold2));
+      border-color: transparent;
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .price-card.featured .btn-price:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(139, 155, 255, .3);
+    }
+
+    /* ─── ABOUT ───────────────────────────────────── */
+    #about {
+      background: linear-gradient(180deg, var(--ink2), var(--ink));
+    }
+
+    .about-split {
+      margin-top: 70px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 72px;
+      align-items: center;
+    }
+
+    .about-quote {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(28px, 3vw, 42px);
+      font-style: italic;
+      line-height: 1.5;
+      color: var(--text);
+      margin-bottom: 32px;
+      padding-left: 32px;
+      border-left: 2px solid var(--gold);
+    }
+
+    .about-text {
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 2;
+    }
+
+    .about-right {
+      position: relative;
+    }
+
+    .about-card {
+      background: var(--ink2);
+      border: 1px solid var(--border);
+      border-radius: var(--rl);
+      padding: 44px;
+    }
+
+    .about-values {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .about-values li {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .av-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: rgba(139, 155, 255, .1);
+      border: 1px solid var(--border2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .av-label {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .av-desc {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* ─── CTA ─────────────────────────────────────── */
+    #cta {
+      text-align: center;
+      background: var(--ink);
+    }
+
+    .cta-inner {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, rgba(139, 155, 255, .06) 0%, rgba(10, 11, 15, 0) 60%);
+      border: 1px solid var(--border);
+      border-radius: 32px;
+      padding: 100px 40px;
+    }
+
+    .cta-inner::before {
+      content: "";
+      position: absolute;
+      top: -1px;
+      left: 20%;
+      right: 20%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .cta-inner::after {
+      content: "";
+      position: absolute;
+      bottom: -1px;
+      left: 30%;
+      right: 30%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border2), transparent);
+    }
+
+    .cta-tag {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: var(--gold);
+      margin-bottom: 32px;
+    }
+
+    .cta-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(44px, 5.5vw, 74px);
+      font-weight: 400;
+      line-height: 1.1;
+      margin-bottom: 24px;
+    }
+
+    .cta-title em {
+      font-style: italic;
+      background: linear-gradient(135deg, var(--gold2), var(--gold3));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .cta-sub {
+      max-width: 600px;
+      margin: 0 auto 48px;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.9;
+    }
+
+    .cta-note {
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--dim);
+    }
+
+    .cta-note span {
+      color: var(--gold);
+    }
+
+    /* ─── IMPRESSUM ───────────────────────────────── */
+    #impressum {
+      background: var(--ink2);
+    }
+
+    .legal-grid {
+      margin-top: 60px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .legal-box {
+      background: var(--ink);
+      border: 1px solid var(--border);
+      border-radius: var(--rl);
+      padding: 36px;
+    }
+
+    .legal-box h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--gold2);
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .legal-box p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 2;
+    }
+
+    /* ─── FOOTER ──────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 52px 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      letter-spacing: 4px;
+      color: var(--gold);
+      text-decoration: none;
+    }
+
+    .footer-copy {
+      font-size: 13px;
+      color: var(--dim);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 28px;
+    }
+
+    .footer-links a {
+      font-size: 12px;
+      color: var(--dim);
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      transition: color .25s;
+    }
+
+    .footer-links a:hover {
+      color: var(--gold);
+    }
+
+    /* ─── ANIMATIONS ──────────────────────────────── */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(28px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity .9s ease, transform .9s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-delay-1 {
+      transition-delay: .1s;
+    }
+
+    .reveal-delay-2 {
+      transition-delay: .2s;
+    }
+
+    .reveal-delay-3 {
+      transition-delay: .3s;
+    }
+
+    .reveal-delay-4 {
+      transition-delay: .4s;
+    }
+
+    .reveal-delay-5 {
+      transition-delay: .5s;
+    }
+
+    /* ─── MOBILE ──────────────────────────────────── */
+    @media(max-width:980px) {
+      nav {
+        padding: 20px 24px;
+      }
+
+      nav.scrolled {
+        padding: 14px 24px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      section {
+        padding: 90px 24px;
+      }
+
+      .hero-line-left,
+      .hero-line-right {
+        display: none;
+      }
+
+      .hero-strip {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .strip-item:nth-child(2) {
+        border-right: none;
+      }
+
+      .strip-item:nth-child(3) {
+        border-top: 1px solid var(--border);
+      }
+
+      .strip-item:nth-child(4) {
+        border-top: 1px solid var(--border);
+        border-right: none;
+      }
+
+      .services-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .pillars {
+        grid-template-columns: 1fr;
+      }
+
+      .process-timeline::before {
+        display: none;
+      }
+
+      .p-step {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .pricing-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .about-split {
+        grid-template-columns: 1fr;
+      }
+
+      .legal-grid {
+        grid-template-columns: 1fr;
+      }
+
+      footer {
+        flex-direction: column;
+        text-align: center;
+        padding: 40px 24px;
+      }
+
+      #cursor,
+      #cursor-ring {
+        display: none;
+      }
+
+      body {
+        cursor: auto;
+      }
+    }
+
+    @media(max-width:640px) {
+      .services-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-strip {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .hero-btns {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+  <div class="ambient"></div>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="#" class="logo">WEBORA</a>
+    <ul class="nav-links">
+      <li><a href="#services">Leistungen</a></li>
+      <li><a href="#process">Ablauf</a></li>
+      <li><a href="#pricing">Preise</a></li>
+      <li><a href="#about">Über mich</a></li>
+    </ul>
+    <a href="#pricing" class="nav-cta">Projekt starten</a>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-line-top"></div>
+    <div class="hero-line-bottom"></div>
+    <div class="hero-line-left"></div>
+    <div class="hero-line-right"></div>
+
+    <div style="max-width:1100px;width:100%">
+
+      <div class="hero-eyebrow">
+        <div class="eyebrow-line"></div>
+        <div class="eyebrow-text">Moderne Websites für lokale Unternehmen · 2026</div>
+        <div class="eyebrow-line"></div>
+      </div>
+
+      <h1 class="hero-title">Websites die</h1>
+      <span class="hero-title-italic">Vertrauen schaffen.</span>
+
+      <p class="hero-sub">
+        Professionell gestaltet, mobil optimiert und inklusive persönlichem Support —
+        für Ihr Unternehmen, egal ob Handwerk, Gastronomie oder Dienstleistung.
+      </p>
+
+      <div class="hero-btns">
+        <a href="#pricing" class="btn-gold">Preise ansehen</a>
+        <a href="#services" class="btn-ghost">Mehr erfahren</a>
+      </div>
+
+      <div class="hero-strip reveal">
+        <div class="strip-item">
+          <div class="strip-num">36h</div>
+          <div class="strip-label">Schnelle Antworten</div>
+        </div>
+        <div class="strip-item">
+          <div class="strip-num">100%</div>
+          <div class="strip-label">Modernes Design</div>
+        </div>
+        <div class="strip-item">
+          <div class="strip-num">∞</div>
+          <div class="strip-label">Laufende Betreuung</div>
+        </div>
+        <div class="strip-item">
+          <div class="strip-num">1:1</div>
+          <div class="strip-label">Persönlicher Kontakt</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee-section">
+    <div class="marquee-track">
+      <span class="marquee-item"><span>✦</span> Modernes Design</span>
+      <span class="marquee-item"><span>✦</span> Mobile First</span>
+      <span class="marquee-item"><span>✦</span> Hosting & Wartung</span>
+      <span class="marquee-item"><span>✦</span> Google Optimierung</span>
+      <span class="marquee-item"><span>✦</span> Persönlicher Support</span>
+      <span class="marquee-item"><span>✦</span> Schnelle Lieferung</span>
+      <span class="marquee-item"><span>✦</span> Faire Preise</span>
+      <span class="marquee-item"><span>✦</span> Modernes Design</span>
+      <span class="marquee-item"><span>✦</span> Mobile First</span>
+      <span class="marquee-item"><span>✦</span> Hosting & Wartung</span>
+      <span class="marquee-item"><span>✦</span> Google Optimierung</span>
+      <span class="marquee-item"><span>✦</span> Persönlicher Support</span>
+      <span class="marquee-item"><span>✦</span> Schnelle Lieferung</span>
+      <span class="marquee-item"><span>✦</span> Faire Preise</span>
+    </div>
+  </div>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="container">
+
+      <div class="section-eyebrow reveal">
+        <div class="line"></div>
+        <div class="tag">Leistungen</div>
+      </div>
+
+      <h2 class="section-title reveal">Alles für Ihre<br><em>Online-Präsenz</em></h2>
+      <p class="section-desc reveal">
+        Von der ersten Idee bis zur fertigen Website — modern, schnell und professionell umgesetzt.
+      </p>
+
+      <div class="services-grid reveal">
+        <div class="svc">
+          <div class="svc-num">01</div>
+          <span class="svc-icon">🎨</span>
+          <h3>Modernes Design</h3>
+          <p>Elegante Websites passend zu Ihrem Unternehmen — professionell und für alle Bildschirme optimiert.</p>
+        </div>
+        <div class="svc">
+          <div class="svc-num">02</div>
+          <span class="svc-icon">⚡</span>
+          <h3>Schnelle Entwicklung</h3>
+          <p>Keine monatelange Wartezeit. Ihre Website wird zügig, sauber und technisch einwandfrei umgesetzt.</p>
+        </div>
+        <div class="svc">
+          <div class="svc-num">03</div>
+          <span class="svc-icon">📱</span>
+          <h3>Kontakt & Buchung</h3>
+          <p>Kontaktformulare, WhatsApp-Buttons und einfache Buchungssysteme — damit Kunden Sie direkt erreichen.</p>
+        </div>
+        <div class="svc">
+          <div class="svc-num">04</div>
+          <span class="svc-icon">🌐</span>
+          <h3>Hosting & Domains</h3>
+          <p>Domain, Hosting und technische Einrichtung. Alles inklusive — kein technisches Vorwissen nötig.</p>
+        </div>
+        <div class="svc">
+          <div class="svc-num">05</div>
+          <span class="svc-icon">🔧</span>
+          <h3>Support & Wartung</h3>
+          <p>Auch nach dem Launch bleibt alles in guten Händen. Updates, Änderungen und Hilfe auf Abruf.</p>
+        </div>
+        <div class="svc">
+          <div class="svc-num">06</div>
+          <span class="svc-icon">🚀</span>
+          <h3>Google Optimierung</h3>
+          <p>Strukturierte Websites die professionell wirken, schnell laden und besser gefunden werden.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- WHY -->
+  <section id="why">
+    <div class="container">
+
+      <div class="section-eyebrow reveal">
+        <div class="line"></div>
+        <div class="tag">Warum Webora</div>
+      </div>
+
+      <h2 class="section-title reveal">Modern. <em>Zuverlässig.</em><br>Persönlich.</h2>
+
+      <div class="pillars">
+        <div class="pillar reveal reveal-delay-1">
+          <div class="pillar-dot"></div>
+          <h3>Direkte Kommunikation</h3>
+          <p>Kein Agentur-Labyrinth. Sie sprechen direkt mit mir — ohne Zwischenhändler, ohne Wartezeiten.</p>
+        </div>
+        <div class="pillar reveal reveal-delay-2">
+          <div class="pillar-dot"></div>
+          <h3>Faire Preise</h3>
+          <p>Professionelle Qualität zu einem Preis, der für lokale Unternehmen Sinn ergibt. Keine versteckten Kosten.
+          </p>
+        </div>
+        <div class="pillar reveal reveal-delay-3">
+          <div class="pillar-dot"></div>
+          <h3>Langfristige Partnerschaft</h3>
+          <p>Ich begleite Ihr Unternehmen langfristig — auch wenn sich Ihre Website mit der Zeit weiterentwickeln soll.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section id="process">
+    <div class="container">
+
+      <div class="section-eyebrow reveal">
+        <div class="line"></div>
+        <div class="tag">Ablauf</div>
+      </div>
+
+      <h2 class="section-title reveal">So läuft Ihr<br><em>Projekt</em> ab</h2>
+      <p class="section-desc reveal">Drei klare Schritte — von der ersten Idee bis zum fertigen Auftritt.</p>
+
+      <div class="process-timeline">
+        <div class="p-step reveal">
+          <div class="p-num-wrap">
+            <div class="p-num">1</div>
+          </div>
+          <div class="p-content">
+            <h3>Erstes Gespräch</h3>
+            <p>Wir sprechen über Ihr Unternehmen, Ihre Wünsche und die Ziele Ihrer Website. Kostenlos und unverbindlich.
+            </p>
+          </div>
+        </div>
+        <div class="p-step reveal reveal-delay-2">
+          <div class="p-num-wrap">
+            <div class="p-num">2</div>
+          </div>
+          <div class="p-content">
+            <h3>Entwicklung</h3>
+            <p>Ihre Website wird professionell erstellt, auf allen Geräten getestet und nach Ihren Wünschen angepasst.
+            </p>
+          </div>
+        </div>
+        <div class="p-step reveal reveal-delay-3">
+          <div class="p-num-wrap">
+            <div class="p-num">3</div>
+          </div>
+          <div class="p-content">
+            <h3>Online & Betreuung</h3>
+            <p>Nach dem Launch geht Ihre Website live. Ich bleibe erreichbar — für Fragen, Updates und alles Weitere.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing">
+    <div class="container">
+
+      <div class="section-eyebrow reveal">
+        <div class="line"></div>
+        <div class="tag">Preise</div>
+      </div>
+
+      <h2 class="section-title reveal">Faire Preise.<br><em>Keine Überraschungen.</em></h2>
+      <p class="section-desc reveal">Einmalige Erstellungskosten, optionale monatliche Betreuung — so transparent wie
+        möglich.</p>
+
+      <div class="pricing-grid">
+
+        <div class="price-card reveal reveal-delay-1">
+          <div class="price-plan">Landing Page</div>
+          <div class="price-amount"><span class="price-currency">€</span>249</div>
+          <div class="price-once">Einmalige Erstellung</div>
+          <div class="price-monthly">
+            <div class="m-label">Monatliche Betreuung</div>
+            <div class="m-price">€29/Monat</div>
+          </div>
+          <ul class="price-features">
+            <li>Moderne One-Page Website</li>
+            <li>Mobil optimiert</li>
+            <li>Kontaktformular</li>
+            <li>Hosting & Wartung</li>
+          </ul>
+          <a href="mailto:kontakt@webora.de" class="btn-price">Anfragen</a>
+        </div>
+
+        <div class="price-card featured reveal reveal-delay-2">
+          <div class="feat-badge">Beliebt</div>
+          <div class="price-plan">Business Website</div>
+          <div class="price-amount"><span class="price-currency">€</span>499</div>
+          <div class="price-once">Einmalige Erstellung</div>
+          <div class="price-monthly">
+            <div class="m-label">Monatliche Betreuung</div>
+            <div class="m-price">€59/Monat</div>
+          </div>
+          <ul class="price-features">
+            <li>Mehrere Unterseiten</li>
+            <li>Modernes Design</li>
+            <li>Google Optimierung</li>
+            <li>Hosting & Wartung</li>
+          </ul>
+          <a href="mailto:kontakt@webora.de" class="btn-price">Anfragen</a>
+        </div>
+
+        <div class="price-card reveal reveal-delay-3">
+          <div class="price-plan">Premium</div>
+          <div class="price-amount"><span class="price-currency">€</span>899</div>
+          <div class="price-once">Einmalige Erstellung</div>
+          <div class="price-monthly">
+            <div class="m-label">Monatliche Betreuung</div>
+            <div class="m-price">€99/Monat</div>
+          </div>
+          <ul class="price-features">
+            <li>Individuelle Funktionen</li>
+            <li>Buchungssystem</li>
+            <li>Premium Design</li>
+            <li>Priorisierter Support</li>
+          </ul>
+          <a href="mailto:kontakt@webora.de" class="btn-price">Anfragen</a>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="container">
+
+      <div class="section-eyebrow reveal">
+        <div class="line"></div>
+        <div class="tag">Über mich</div>
+      </div>
+
+      <div class="about-split">
+        <div class="about-left reveal">
+          <blockquote class="about-quote">
+            „Mein Ziel ist nicht einfach nur eine schöne Website — sondern eine Online-Präsenz, die wirklich überzeugt."
+          </blockquote>
+          <p class="about-text">
+            Ich unterstütze lokale Unternehmen dabei, professionell online sichtbar zu werden.
+            Dabei lege ich großen Wert auf ehrliche Kommunikation, modernes Design und langfristige Betreuung.
+            <br><br>
+            Egal ob kleiner Handwerksbetrieb, Restaurant oder Dienstleister —
+            jedes Unternehmen verdient eine professionelle Onlinepräsenz.
+          </p>
+        </div>
+        <div class="about-right reveal reveal-delay-2">
+          <div class="about-card">
+            <ul class="about-values">
+              <li>
+                <div class="av-icon">✦</div>
+                <div>
+                  <div class="av-label">Ehrlichkeit zuerst</div>
+                  <div class="av-desc">Klare Kommunikation, keine versteckten Kosten, keine leeren Versprechen.</div>
+                </div>
+              </li>
+              <li>
+                <div class="av-icon">🎯</div>
+                <div>
+                  <div class="av-label">Zielorientiert</div>
+                  <div class="av-desc">Ich verstehe Ihre Ziele und gestalte alles darauf ausgerichtet.</div>
+                </div>
+              </li>
+              <li>
+                <div class="av-icon">🤝</div>
+                <div>
+                  <div class="av-label">Langfristige Beziehung</div>
+                  <div class="av-desc">Kein einmaliges Projekt — eine echte Partnerschaft auf Augenhöhe.</div>
+                </div>
+              </li>
+              <li>
+                <div class="av-icon">⚡</div>
+                <div>
+                  <div class="av-label">Schnell & verlässlich</div>
+                  <div class="av-desc">Antwort innerhalb von 36 Stunden, Lieferung wie versprochen.</div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="cta">
+    <div class="container reveal">
+      <div class="cta-inner">
+        <div class="cta-tag">Bereit anzufangen?</div>
+        <h2 class="cta-title">Ihre neue Website<br>wartet auf Sie — <em>starten wir.</em></h2>
+        <p class="cta-sub">
+          Lassen Sie uns in einem kurzen Gespräch herausfinden, welche Website am besten zu Ihrem Unternehmen passt.
+        </p>
+        <a href="mailto:kontakt@webora.de" class="btn-gold">Kostenloses Gespräch anfragen</a>
+        <p class="cta-note">Kostenlos & unverbindlich · Antwort innerhalb <span>36 Stunden</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- IMPRESSUM -->
+  <section id="impressum">
+    <div class="container">
+
+      <div class="section-eyebrow reveal">
+        <div class="line"></div>
+        <div class="tag">Rechtliches</div>
+      </div>
+
+      <h2 class="section-title reveal">Impressum &<br><em>Pflichtangaben</em></h2>
+
+      <div class="legal-grid reveal">
+        <div class="legal-box">
+          <h3>Angaben</h3>
+          <p>
+            <strong style="color:var(--text);">Webora</strong><br>
+            Anis Ouyahya<br>
+            Musterstraße 12<br>
+            12345 Musterstadt
+          </p>
+        </div>
+        <div class="legal-box">
+          <h3>Kontakt</h3>
+          <p>
+            E-Mail: kontakt@webora.de<br>
+            Telefon: +49 123 456789
+          </p>
+        </div>
+        <div class="legal-box">
+          <h3>Steuer</h3>
+          <p>
+            Umsatzsteuer-ID: BE123456789<br>
+            Steuernummer: 123/456/78901
+          </p>
+        </div>
+        <div class="legal-box">
+          <h3>Haftungsausschluss</h3>
+          <p>
+            Trotz sorgfältiger inhaltlicher Kontrolle übernehmen wir keine Haftung für die Inhalte externer Links.
+            Für den Inhalt der verlinkten Seiten sind ausschließlich deren Betreiber verantwortlich.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <a href="#" class="footer-logo">WEBORA</a>
+    <span class="footer-copy">© 2026 Webora · Anis Ouyahya · Moderne Websites für lokale Unternehmen</span>
+    <div class="footer-links">
+      <a href="#impressum">Impressum</a>
+      <a href="#">Datenschutz</a>
+      <a href="#">AGB</a>
+    </div>
+  </footer>
+
+  <script>
+    /* Cursor */
+    const cur = document.getElementById('cursor');
+    const ring = document.getElementById('cursor-ring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cur.style.transform = `translate(${mx}px,${my}px) translate(-50%,-50%)`;
+    });
+    function animRing() {
+      rx += (mx - rx) * .12; ry += (my - ry) * .12;
+      ring.style.transform = `translate(${rx}px,${ry}px) translate(-50%,-50%)`;
+      requestAnimationFrame(animRing);
+    }
+    animRing();
+
+    document.querySelectorAll('a,button,.svc,.pillar,.price-card,.strip-item,.p-step').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cur.style.width = '18px'; cur.style.height = '18px';
+        ring.style.width = '54px'; ring.style.height = '54px'; ring.style.opacity = '1';
+      });
+      el.addEventListener('mouseleave', () => {
+        cur.style.width = '10px'; cur.style.height = '10px';
+        ring.style.width = '38px'; ring.style.height = '38px'; ring.style.opacity = '.5';
+      });
+    });
+
+    /* Nav shrink */
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    /* Scroll reveal */
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+</body>
+
+</html>
